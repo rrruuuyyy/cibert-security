@@ -15,14 +15,21 @@ class CheckApiToken
      */
     public function handle($request, Closure $next)
 {
-    if(!empty(trim($request->input('api_token')))){
-
-        $is_exists = User::where('id' , Auth::guard('api')->id())->exists();
-        if($is_exists){
-            return $next($request);
-        }
-    }
+    $user = $request->user();
+    if( !$user ){
     return response()->json(['status'=>false,'mensaje'=>'Sin permisos','data'=>''],200);
+
+    }
+    return $next($request);
+
+    // if(!empty(trim($request->input('api_token')))){
+
+    //     $is_exists = User::where('id' , Auth::guard('api')->id())->exists();
+    //     if($is_exists){
+    //         return $next($request);
+    //     }
+    // }
+    // return response()->json(['status'=>false,'mensaje'=>'Sin permisos','data'=>''],200);
     
 
 }
