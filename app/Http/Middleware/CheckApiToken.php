@@ -3,6 +3,8 @@
 namespace App\Http\Middleware;
 
 use Closure;
+use Illuminate\Http\Request;
+
 
 class CheckApiToken
 {
@@ -13,9 +15,10 @@ class CheckApiToken
      * @param  \Closure  $next
      * @return mixed
      */
-    public function handle($request, Closure $next)
+    public function handle(Request $request, Closure $next)
 {
-    $user = $request->user();
+    $user = $request;
+    return response()->json($user);
     if( !$user ){
     return response()->json(['status'=>false,'mensaje'=>'Sin permisos','data'=>''],200);
 

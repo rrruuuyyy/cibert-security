@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-Route::prefix('v1')->middleware(['auth'])->group(function(){
+Route::prefix('v1')->group(function(){
     Route::get('/', function () {
         return response()->json(['status'=>true,'mensaje'=>'Bienvenido a el servidor'],200);
     });
