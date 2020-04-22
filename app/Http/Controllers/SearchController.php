@@ -8,7 +8,7 @@ class SearchController extends Controller
 {
     private $models = [
         'users' => 'App\User', // no de la table
-        // 'shops' => 'App\shop',
+        'domains' => 'App\Domain',
         // 'products' => 'App\products',
         // 'orders' => 'App\orders',
         // 'purchase_orders' => 'App\purchase_order',
@@ -38,19 +38,19 @@ class SearchController extends Controller
             $query->orWhere($field, 'LIKE', $searchWildcard);
             }
         });
-    //   switch ($request->model) {
-    //       case 'shops':
-    //           $query->with(['header','cover']);
-    //           break;
-    //       case 'products':
-    //           $query->with(['product_attacheds.attached']);
-    //           break;
-    //       case 'orders':
-    //           $query->with(['usuario','platform','purchase']);
-    //           break;
-    //       default:
-    //           break;
-    //   }
+      switch ($request->model) {
+          case 'domains':
+              $query->with(['infections','user']);
+              break;
+          case 'products':
+              $query->with(['product_attacheds.attached']);
+              break;
+          case 'orders':
+              $query->with(['usuario','platform','purchase']);
+              break;
+          default:
+              break;
+      }
         // Busqueda de eliminados
         if($request->trash == true){
             $query->onlyTrashed();
