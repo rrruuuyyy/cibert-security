@@ -169,7 +169,9 @@ class InfectionController extends Controller
         $limit = ($request->limit) ? $request->limit : 15;
         $user_detec = $request->user();        
         if( $user_detec->role === 'admin' ){
-            $data = Domain::has('infections')->with(['infections','user'])->paginate($limit);
+            $data = Domain::has('infections')->with(['infections','user'])->with(['actions_takens' => function ($query) {
+                $query->orderBy('created_at','DESC')->first();
+            }])->paginate($limit);
             // for ($i=0; $i < count($domains); $i++) { 
             //     if( count($domains[$i]->infections) != 0 ){
             //         array_push( $data_array, $domains[$i] );
@@ -179,7 +181,9 @@ class InfectionController extends Controller
             // var_dump( $data );
             // return;
         }else{
-            $data = Domain::has('infections')->where( 'user_id' , $usuario_id )->with(['infections', 'user'])->paginate($limit);
+            $data = Domain::has('infections')->where( 'user_id' , $usuario_id )->with(['infections', 'user'])->with(['actions_takens' => function ($query) {
+                $query->orderBy('created_at','DESC')->first();
+            }])->paginate($limit);
         }
         return response()->json(['status'=>true,'mensaje'=>'Domains infected','data'=>$data],200);
     }

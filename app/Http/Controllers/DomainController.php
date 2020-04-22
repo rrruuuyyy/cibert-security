@@ -30,9 +30,13 @@ class DomainController extends Controller
         $limit = ($request->limit) ? $request->limit : 15;
         if( $user_detec->role === 'admin' ){
             // $data = DB::table('domains')->with(['user'])->paginate($limit);
-            $data = Domain::with(['user','infections'])->paginate($limit);
+            $data = Domain::with(['user','infections'])->with(['actions_takens' => function ($query) {
+                $query->orderBy('created_at','DESC')->first();
+            }])->paginate($limit);
         }else{
-            $data = Domain::where( 'user_id' , $usuario_id )->with(['user','infections'])->paginate($limit);
+            $data = Domain::where( 'user_id' , $usuario_id )->with(['user','infections'])->with(['actions_takens' => function ($query) {
+                $query->orderBy('created_at','DESC')->fist();
+            }])->paginate($limit);
         }
         return response()->json(['status'=>true,'mensaje'=>'Domains cargados','data'=>$data],200);
     }
