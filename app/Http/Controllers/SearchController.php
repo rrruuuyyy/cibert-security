@@ -40,7 +40,7 @@ class SearchController extends Controller
         });
       switch ($request->model) {
           case 'domains':
-              $query->with(['infections','user']);
+              $query->with(['infections','user','actions_takens']);
               break;
           case 'products':
               $query->with(['product_attacheds.attached']);
