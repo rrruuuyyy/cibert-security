@@ -28,6 +28,7 @@ Route::prefix('v1')->group(function(){
         Route::get('usuario/{id}/only_infections', 'InfectionController@onlyInfections');
         Route::resource('usuario/{id}/domain/{domain_id}/action_taken','ActionTakenController', ['only'=>['store','index']]);
         Route::post('usuario/{id}/domain_file', 'DomainController@createByFile');
+        Route::resource('usuario/{id}/report','ReportController', ['only'=>['index']]);
         // Route::resource('domain/{id}/action_infection','InfectionController', ['only'=>['show','store','update','destroy','index']]);
         Route::get('search', 'SearchController@index');
     });
