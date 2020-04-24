@@ -29,7 +29,7 @@ class ReportController extends Controller
         $user_detec = $request->user();        
         if( $user_detec->role === 'admin' ){
             $data['domains'] = Domain::has('infections')->with(['infections','user'])->with(['actions_takens' => function ($query) {
-                $query->orderBy('created_at','DESC')->get()->first();
+                $query->orderBy('created_at','DESC')->get();
             }])->get();
             // for ($i=0; $i < count($domains); $i++) { 
             //     if( count($domains[$i]->infections) != 0 ){
@@ -41,7 +41,7 @@ class ReportController extends Controller
             // return;
         }else{
             $data['domains'] = Domain::has('infections')->where( 'user_id' , $usuario_id )->with(['infections', 'user'])->with(['actions_takens' => function ($query) {
-                $query->orderBy('created_at','DESC')->first();
+                $query->orderBy('created_at','DESC')->get();
             }])->get();
         }
         $pdf = PDF::loadView('single_report', $data);
