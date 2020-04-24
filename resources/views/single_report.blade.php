@@ -32,7 +32,7 @@
 				<tr>
 					<td>{{$domain->url}}</td>
 					<td>{{$domain->name}}</td>
-					<td>{{$domain->user->name}}</td>
+					<td>{{ empty($domain->user->name) ? 'No user' : $domain->user->name }}</td>
 					<td>{{ ( count($domain->actions_takens) != 0 )? $domain->actions_takens[0]->type  : 'None' }}</td>
 					<td>{{$domain->status}}</td>
 					<td>{{count($domain->infections)}}</td>
