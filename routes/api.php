@@ -30,7 +30,9 @@ Route::prefix('v1')->group(function(){
         Route::post('usuario/{id}/domain_file', 'DomainController@createByFile');
         Route::resource('usuario/{id}/report','ReportController', ['only'=>['index']]);
         // Route::resource('domain/{id}/action_infection','InfectionController', ['only'=>['show','store','update','destroy','index']]);
+        Route::put('usuario/{id}/config', 'ConfigController@update');
         Route::resource('user_admin','UserController', ['only'=>['show','store','update','destroy','index']]); // Usuarios controller
+        Route::post('usuario/{id}/change_password', 'UserController@changePassword');
         Route::get('search', 'SearchController@index');
     });
 });

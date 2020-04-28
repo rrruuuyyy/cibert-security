@@ -186,10 +186,13 @@ class DomainController extends Controller
         $data_array = $spreadsheet->getActiveSheet()->toArray();
         // var_dump( count($data_array) );
         // return;
+        // return response()->json($data_array,200);
 
-        for ($i=0; $i < count( $data_array ) ; $i++) { 
+        for ($i=1; $i < count( $data_array ) ; $i++) { 
             $url = $data_array[$i][0];
-            if ( $url = 'Dominios' || $url = 'dominios' || $url = '' ) continue;
+            $user_id = $data_array[$i][1];
+            // if ( $url = 'Dominios' || $url = 'dominios' || $url = '' ) continue;
+            // return $url;
             $url = str_replace( '/', '', $url ); 
             $url = str_replace( 'https:', '', $url ); 
             $url = str_replace( 'www.', '', $url );
@@ -197,7 +200,11 @@ class DomainController extends Controller
             if( !$domain ){
                 $new_domain = new Domain();
                 $new_domain->url = $url;
+                $new_domain->user_id = $user_id;
                 $new_domain->save();
+            }else{
+                $domain->user_id = $user_id;
+                $domain->save();
             }
         }
         return response()->json(['status'=>true,'mensaje'=>'Xlsx loaded','data'=>$data_array],200);

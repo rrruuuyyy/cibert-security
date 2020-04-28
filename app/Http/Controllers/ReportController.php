@@ -3,12 +3,15 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Spipu\Html2Pdf\Exception\Html2PdfException;
+use Spipu\Html2Pdf\Exception\ExceptionFormatter;
 // use Barryvdh\DomPDF\Facade as PDF;
 // use PDF;
 // use Dompdf\Dompdf;
 use PDF;
 use App\User;
 use App\Domain;
+use Spipu\Html2Pdf\Html2Pdf;
 
 class ReportController extends Controller
 {
@@ -31,21 +34,25 @@ class ReportController extends Controller
             $data['domains'] = Domain::has('infections')->with(['infections','user'])->with(['actions_takens' => function ($query) {
                 $query->orderBy('created_at','DESC')->get();
             }])->get();
-            // for ($i=0; $i < count($domains); $i++) { 
-            //     if( count($domains[$i]->infections) != 0 ){
-            //         array_push( $data_array, $domains[$i] );
-            //     }
-            // }
-            // $data_array->paginate(15);
-            // var_dump( $data );
-            // return;
         }else{
             $data['domains'] = Domain::has('infections')->where( 'user_id' , $usuario_id )->with(['infections', 'user'])->with(['actions_takens' => function ($query) {
                 $query->orderBy('created_at','DESC')->get();
             }])->get();
         }
-        $pdf = PDF::loadView('single_report', $data);
-        return $pdf->download('Single_report.pdf');
+        return \view('single_report', $data);
+        // $pdf = PDF::loadView('single_report', $data);
+        // return $pdf->download('Domain abuse.pdf');
+        // try {
+        //     $content = view('example1', $data);        
+        //     $html2pdf = new Html2Pdf('P', 'A4', 'fr');
+        //     $html2pdf->writeHTML($content);
+        //     return $html2pdf->output('my_doc.pdf', 'S');
+        // } catch (Html2PdfException $e) {
+        //     $html2pdf->clean();
+        
+        //     $formatter = new ExceptionFormatter($e);
+        //     echo $formatter->getHtmlMessage();
+        // }
         // $dompdf = new Dompdf();
         // $dompdf->loadHtml('hello world');
         // $dompdf->setPaper('A4', 'landscape');

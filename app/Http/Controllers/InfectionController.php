@@ -56,8 +56,8 @@ class InfectionController extends Controller
         }
         $validator = Validator::make($request->all(), [ 
             'domain_id' => 'required',
-            'name' => 'required',
-            'quantity' => 'required',
+            'type' => 'required',
+            'abuse_type' => 'required',
         ]);  
         if ($validator->fails()) {
             return response()->json(['status'=>false,'mensaje'=>'Datos faltantes','error'=>$validator->errors()], 200);                        
@@ -119,15 +119,15 @@ class InfectionController extends Controller
         }
         $validator = Validator::make($request->all(), [ 
             'domain_id' => 'required',
-            'name' => 'required',
-            'quantity' => 'required',
+            'type' => 'required',
+            'abuse_type' => 'required',
         ]);    
         if ($validator->fails()) {
             return response()->json(['status'=>false,'mensaje'=>'Datos faltantes','error'=>$validator->errors()], 200);                        
         }
         $infection->domain_id = $request->domain_id;
-        $infection->name = $request->name;
-        $infection->quantity = $request->quantity;
+        $infection->type = $request->type;
+        $infection->abuse_type = $request->abuse_type;
         $infection->save();
         // $infection->domain();
         return response()->json(['status'=>true,'mensaje'=>'Infection updated','data'=>$infection],200);

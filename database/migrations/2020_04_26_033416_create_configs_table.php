@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateInfectionsTable extends Migration
+class CreateConfigsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,13 @@ class CreateInfectionsTable extends Migration
      */
     public function up()
     {
-        Schema::create('infections', function (Blueprint $table) {
+        Schema::create('configs', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('type')->nullable();
-            $table->string('abuse_type')->nullable();
-            $table->integer('domain_id')->unsigned();
-            $table->foreign('domain_id')->references('id')->on('domains');
+            $table->longText('dashboard')->nullable();
+            $table->longText('alerts')->nullable();
+            $table->longText('active_domains')->nullable();
+            $table->integer('user_id')->unsigned();
+            $table->foreign('user_id')->references('id')->on('users');
             $table->timestamps();
         });
     }
@@ -30,6 +31,6 @@ class CreateInfectionsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('infections');
+        Schema::dropIfExists('configs');
     }
 }

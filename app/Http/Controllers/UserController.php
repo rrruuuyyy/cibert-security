@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Validator;
 use App\User;
+use App\Config;
 
 class UserController extends Controller
 {
@@ -39,13 +40,40 @@ class UserController extends Controller
         $validator = Validator::make($request->all(), [ 
             'name' => 'required',
             'email' => 'required',
-            'password' => 'required',
             'role' => 'required',
         ]);
         $user = new User( $request->all() );
         $user->password = bcrypt('123asd');
         $user->save();
+        // Al crear el usuario le asignamos una configuracion predeterminada;
+        $config = new Config();
+        $config->dashboard = (object)[];
+        $config->dashboard->information_panel = true;
+        $config->dashboard = json_encode( $config->dashboard );
+        $config->user_id = $user->id;
+        $config->save();
         return response()->json(['status'=>true,'mensaje'=>'Usuarios creado','data'=>$user],200);
+    }
+
+    public function changePassword(Request $request, $usuario_id){
+        $user_detec = $request->user();
+        if( $user_detec->role != 'admin' ){
+            return response()->json(['status'=>false,'mensaje'=>'Sin privilegios','error'=>'Without privilagion'],200);
+        }
+        $user = User::find($usuario_id);
+        if( !$user ){
+            return response()->json(['status'=>false,'mensaje'=>'User not found','error'=>'Usuario no encontrado'],200);
+        }
+        $validator = Validator::make($request->all(), [ 
+            'password' => 'required',  
+            'c_password' => 'required|same:password',
+        ]);
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 401);                        
+        }
+        $user->password = bcrypt($request->password);
+        $user->save();
+        return response()->json(['status'=>true,'mensaje'=>'Usuarios actualziado','data'=>''],200);
     }
 
     /**

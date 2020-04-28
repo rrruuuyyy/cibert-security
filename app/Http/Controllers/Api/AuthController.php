@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Validator;
 use Carbon\Carbon;
 use App\User;
+use App\Config;
 
 class AuthController extends Controller
 {
@@ -76,6 +77,18 @@ class AuthController extends Controller
         $user = $request->user();
         if( $user->contador_id != null ){
             $user->contador = Contador::find($user->contador_id);
+        }
+        $user->config = Config::where('user_id',$user->id)->get()->first();
+        $user->config->dashboard = \json_decode($user->config->dashboard);
+        if( !$user->config ){
+            $config = new Config();
+            $config->dashboard = (object)[];
+            $config->dashboard->information_panel = true;
+            $config->dashboard = json_encode( $config->dashboard );
+            $config->user_id = $user->id;
+            $config->save();
+            $config->dashboard = json_decode( $config->dashboard );
+            $user->config = $config;
         }
         return response()->json(['status'=>true,'data'=>$user],200);
     }

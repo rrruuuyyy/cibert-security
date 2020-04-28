@@ -38,6 +38,9 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
     public function domains(){
-        return $this->hasMany('App\Domain','user_id');        
+        return $this->hasMany('App\Domain','user_id');
+    }
+    public function config(){
+        return $this->hasOne('App\Config','user_id');
     }
 }
