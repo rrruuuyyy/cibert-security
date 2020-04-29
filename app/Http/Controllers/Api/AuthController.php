@@ -85,20 +85,11 @@ class AuthController extends Controller
             $config->dashboard = (object)[];
             $config->dashboard->information_panel = true;
             $config->dashboard = json_encode( $config->dashboard );
-            $config->$user->id = $user->id;
-            $config->save();
-        }
-        $user->config->dashboard = \json_decode($user->config->dashboard);
-        if( !$user->config ){
-            $config = new Config();
-            $config->dashboard = (object)[];
-            $config->dashboard->information_panel = true;
-            $config->dashboard = json_encode( $config->dashboard );
             $config->user_id = $user->id;
             $config->save();
-            $config->dashboard = json_decode( $config->dashboard );
             $user->config = $config;
         }
+        $user->config->dashboard = \json_decode($user->config->dashboard);
         return response()->json(['status'=>true,'data'=>$user],200);
     }
     public function logout(Request $request)
