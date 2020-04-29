@@ -79,6 +79,15 @@ class AuthController extends Controller
             $user->contador = Contador::find($user->contador_id);
         }
         $user->config = Config::where('user_id',$user->id)->get()->first();
+        if( !$user->config ){
+            // Al crear el usuario le asignamos una configuracion predeterminada;
+            $config = new Config();
+            $config->dashboard = (object)[];
+            $config->dashboard->information_panel = true;
+            $config->dashboard = json_encode( $config->dashboard );
+            $config->$user->id = $user->id;
+            $config->save();
+        }
         $user->config->dashboard = \json_decode($user->config->dashboard);
         if( !$user->config ){
             $config = new Config();
