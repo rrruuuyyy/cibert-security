@@ -31,7 +31,7 @@ class DomainController extends Controller
         }
         $data = (object)[];
         $limit = ($request->limit) ? $request->limit : 15;
-        if( $user_detec->role === 'admin' ){
+        if( $user_detec->role === 'super_admin' ){
             // $data = DB::table('domains')->with(['user'])->paginate($limit);
             $data = Domain::with(['user','infections'])->with(['actions_takens' => function ($query) {
                 $query->orderBy('created_at','DESC')->get()->first();
@@ -57,7 +57,7 @@ class DomainController extends Controller
             return response()->json(['status'=>false,'mensaje'=>'No hay un usuario con ese codigo','error'=>'User not found'],200);
         }
         $user_detec = $request->user();        
-        if( $user_detec->role != "admin" ){
+        if( $user_detec->role != "super_admin" ){
             if( $usuario_id != $user_detec->id ){
                 return response()->json(['status'=>false,'mensaje'=>'El id del usuario no corresponde con el del url','error'=>'Id bad'],200);
             }
@@ -89,7 +89,7 @@ class DomainController extends Controller
         }
         $domain = Domain::find( $id );
         $user_detec = $request->user();        
-        if( $user_detec->role != "admin" ){
+        if( $user_detec->role != "super_admin" ){
             if( $usuario_id != $user_detec->id ){
                 return response()->json(['status'=>false,'mensaje'=>'El id del usuario no corresponde con el del url','error'=>'Id bad'],200);
             }
@@ -117,7 +117,7 @@ class DomainController extends Controller
         }
         $domain = Domain::find( $id );
         $user_detec = $request->user();        
-        if( $user_detec->role != "admin" ){
+        if( $user_detec->role != "super_admin" ){
             if( $usuario_id != $user_detec->id ){
                 return response()->json(['status'=>false,'mensaje'=>'El id del usuario no corresponde con el del url','error'=>'Id bad'],200);
             }
@@ -155,7 +155,7 @@ class DomainController extends Controller
         }
         $domain = Domain::find( $id );
         $user_detec = $request->user();        
-        if( $user_detec->role != "admin" ){
+        if( $user_detec->role != "super_admin" ){
             if( $usuario_id != $user_detec->id ){
                 return response()->json(['status'=>false,'mensaje'=>'El id del usuario no corresponde con el del url','error'=>'Id bad'],200);
             }
@@ -173,7 +173,7 @@ class DomainController extends Controller
         if(!$usuario){
             return response()->json(['status'=>false,'mensaje'=>'No hay un usuario con ese codigo','error'=>'User not found'],200);
         }
-        if( $user_detec->role != 'admin' ){
+        if( $user_detec->role != 'super_admin' ){
             if( $user_detec->id != $usuario->id ){
                 return response()->json(['status'=>false,'mensaje'=>'Sin permisos al dominio','error'=>'Without privileges'],200);
             }
@@ -187,27 +187,49 @@ class DomainController extends Controller
         // var_dump( count($data_array) );
         // return;
         // return response()->json($data_array,200);
-
-        for ($i=1; $i < count( $data_array ) ; $i++) { 
-            $url = $data_array[$i][0];
-            $user_id = $data_array[$i][1];
-            // if ( $url = 'Dominios' || $url = 'dominios' || $url = '' ) continue;
-            // return $url;
-            $url = str_replace( '/', '', $url ); 
-            $url = str_replace( 'https:', '', $url ); 
-            $url = str_replace( 'www.', '', $url );
-            $domain = Domain::where( 'url', $url )->get()->first();
-            if( !$domain ){
-                $new_domain = new Domain();
-                $new_domain->url = $url;
-                $new_domain->user_id = $user_id;
-                $new_domain->save();
-            }else{
-                $domain->user_id = $user_id;
-                $domain->save();
-            }
-        }
-        return response()->json(['status'=>true,'mensaje'=>'Xlsx loaded','data'=>$data_array],200);
+        save($data_array);
+        // for ($i=1; $i < count( $data_array ) ; $i++) { 
+        //     $url = $data_array[$i][0];
+        //     $user_id = $data_array[$i][1];
+        //     // if ( $url = 'Dominios' || $url = 'dominios' || $url = '' ) continue;
+        //     // return $url;
+        //     $url = str_replace( '/', '', $url ); 
+        //     $url = str_replace( 'https:', '', $url ); 
+        //     $url = str_replace( 'www.', '', $url );
+        //     $domain = Domain::where( 'url', $url )->get()->first();
+        //     if( !$domain ){
+        //         $new_domain = new Domain();
+        //         $new_domain->url = $url;
+        //         $new_domain->user_id = $user_id;
+        //         $new_domain->save();
+        //     }else{
+        //         $domain->user_id = $user_id;
+        //         $domain->save();
+        //     }
+        // }
+        return response()->json(['status'=>true,'mensaje'=>'Los xmls se estaran guardando','data'=>''],200);
 
     }
+
 }
+        function save($data_array){
+            for ($i=1; $i < count( $data_array ) ; $i++) { 
+                $url = $data_array[$i][0];
+                $user_id = $data_array[$i][1];
+                // if ( $url = 'Dominios' || $url = 'dominios' || $url = '' ) continue;
+                // return $url;
+                $url = str_replace( '/', '', $url ); 
+                $url = str_replace( 'https:', '', $url ); 
+                $url = str_replace( 'www.', '', $url );
+                $domain = Domain::where( 'url', $url )->get()->first();
+                if( !$domain ){
+                    $new_domain = new Domain();
+                    $new_domain->url = $url;
+                    $new_domain->user_id = $user_id;
+                    $new_domain->save();
+                }else{
+                    $domain->user_id = $user_id;
+                    $domain->save();
+                }
+            }
+        }

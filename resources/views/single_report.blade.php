@@ -29,34 +29,42 @@
 	</div>
 	<div class="separador">
 	</div>
-	<table class="table is-striped" style="width:100%; margin-top:10px;">
-		<thead>
-			<tr>
-				<th>Domain</th>
-				<th>User</th>
-				<th>Action taken</th>
-				<th>Date</th>
-				<th>Status</th>
-				<th>Action taken2</th>
-				<th>Date</th>
-				<th>Infections</th>
-			</tr>
-		</thead>
-		<tbody>
-			@foreach ($domains as $domain)
+	<?php if( count($domains) != 0 ){
+		?>
+		<table class="table is-striped" style="width:100%; margin-top:10px;">
+			<thead>
 				<tr>
-					<td>{{$domain->url}}</td>
-					<td>{{ empty($domain->user->name) ? 'No user' : $domain->user->name }}</td>
-					<td>{{ ( count($domain->actions_takens) != 0 )? $domain->actions_takens[0]->type  : 'None' }}</td>
-					<td>{{ ( count($domain->actions_takens) != 0 )? $domain->actions_takens[0]->created_at  : 'None' }}</td>
-					<td>{{$domain->status}}</td>
-					<td>{{ ( count($domain->actions_takens_domain) != 0 )? $domain->actions_takens_domain[0]->type  : 'None' }}</td>
-					<td>{{ ( count($domain->actions_takens_domain) != 0 )? $domain->actions_takens_domain[0]->created_at  : 'None' }}</td>
-					<td>{{count($domain->infections)}}</td>
+					<th>Domain</th>
+					<th>User</th>
+					<th>Action taken</th>
+					<th>Date</th>
+					<th>Status</th>
+					<th>Action taken2</th>
+					<th>Date</th>
+					<th>Infections</th>
 				</tr>
-			@endforeach
-		</tbody>
-	</table>
+			</thead>
+			<tbody>
+				@foreach ($domains as $domain)
+					<tr>
+						<td>{{$domain->url}}</td>
+						<td>{{ empty($domain->user->name) ? 'No user' : $domain->user->name }}</td>
+						<td>{{ ( count($domain->actions_takens) != 0 )? $domain->actions_takens[0]->type  : 'None' }}</td>
+						<td>{{ ( count($domain->actions_takens) != 0 )? $domain->actions_takens[0]->created_at  : 'None' }}</td>
+						<td>{{$domain->status}}</td>
+						<td>{{ ( count($domain->actions_takens_domain) != 0 )? $domain->actions_takens_domain[0]->type  : 'None' }}</td>
+						<td>{{ ( count($domain->actions_takens_domain) != 0 )? $domain->actions_takens_domain[0]->created_at  : 'None' }}</td>
+						<td>{{count($domain->infections)}}</td>
+					</tr>
+				@endforeach
+			</tbody>
+		</table>
+		<?php
+	}else{ ?>
+		<div class="notification">
+			<strong>No infected dominions</strong>
+		</div> <?php
+	}?>
 	<div class="w-100 text-section">
 		<h4 class="title is-5">Abuse distribution type</h4>
 	</div>
@@ -212,7 +220,7 @@
 	}
 	.text-section{
 		text-align: left;
-		margin-top: 20px;
+		margin-top: 10px;
 		padding-left: 5px
 		margin-bottom: 5px;
 	}

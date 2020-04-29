@@ -16,12 +16,13 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        $user = $request->user();
-        if( $user->role != 'admin' ){
-            return response()->json(['status'=>false,'mensaje'=>'Sin privilegios','error'=>'Without privilagion'],200);
-        }
         $limit = ($request->limit) ? $request->limit : 15;
-        $users = User::with(['domains'])->paginate($limit);
+        $user = $request->user();
+        if( $user->role === 'super_admin' ){
+            $users = User::with(['domains'])->paginate($limit);
+            return response()->json(['status'=>true,'mensaje'=>'Usuarios encontrados','data'=>$users],200);
+        }
+        $users = User::where('role','!=','super_admin')->with(['domains'])->paginate($limit);
         return response()->json(['status'=>true,'mensaje'=>'Usuarios encontrados','data'=>$users],200);
     }
 
@@ -34,7 +35,7 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $user = $request->user();
-        if( $user->role != 'admin' ){
+        if( $user->role != 'super_admin' ){
             return response()->json(['status'=>false,'mensaje'=>'Sin privilegios','error'=>'Without privilagion'],200);
         }
         $validator = Validator::make($request->all(), [ 
@@ -57,10 +58,12 @@ class UserController extends Controller
 
     public function changePassword(Request $request, $usuario_id){
         $user_detec = $request->user();
-        if( $user_detec->role != 'admin' ){
-            return response()->json(['status'=>false,'mensaje'=>'Sin privilegios','error'=>'Without privilagion'],200);
-        }
         $user = User::find($usuario_id);
+        if( $user_detec->id != $user->id ){
+            if( $user_detec->role != 'super_admin' ){
+                return response()->json(['status'=>false,'mensaje'=>'Sin privilegios','error'=>'Without privilagion'],200);
+            }
+        }
         if( !$user ){
             return response()->json(['status'=>false,'mensaje'=>'User not found','error'=>'Usuario no encontrado'],200);
         }
@@ -136,11 +139,14 @@ class UserController extends Controller
         $user = User::find( $usuario_id );
         if(!$user){
             return response()->json(['status'=>false,'mensaje'=>'No hay un usuario con ese codigo','error'=>'User not found'],200);
-        }        
-        if( $user_detec->role != "admin" ){
-            if( $usuario_id != $user_detec->id ){
-                return response()->json(['status'=>false,'mensaje'=>'Sin privilegios','error'=>'Without privilagion'],200);
-            }            
+        }   
+        if( $user_detec->id === $user->id ){
+            return response()->json(['status'=>false,'mensaje'=>'Auto borrandos','error'=>'No te puedes auto borrar'],200);
+        }     
+        if( $user_detec->role != "super_admin" ){
+            return response()->json(['status'=>false,'mensaje'=>'Sin privilegios','error'=>'Without privilagion'],200);
+            // if( $usuario_id != $user_detec->id ){ //Esto hace que si el usuario intenta borrar uno que no sea el no podra
+            // }            
         }
         $user->delete();
         return response()->json(['status'=>true,'mensaje'=>'Usuarios borrado','data'=>''],200);

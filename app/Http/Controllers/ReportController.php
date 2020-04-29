@@ -72,11 +72,13 @@ class ReportController extends Controller
                 }
             }
         }
-        $porc->black_hat = round( ($porc->black_hat / $total) * 100, 2 ) ;
-        $porc->pharming = round( ($porc->pharming / $total) * 100, 2 ) ;
-        $porc->malware = round( ($porc->malware / $total) * 100, 2 );
-        $porc->phising = round( ($porc->phising / $total) * 100, 2 );
-        $porc->seo_spam = round( ($porc->seo_spam / $total) * 100, 2 );
+        if($total != 0){
+            $porc->black_hat = round( ($porc->black_hat / $total) * 100, 2 ) ;
+            $porc->pharming = round( ($porc->pharming / $total) * 100, 2 ) ;
+            $porc->malware = round( ($porc->malware / $total) * 100, 2 );
+            $porc->phising = round( ($porc->phising / $total) * 100, 2 );
+            $porc->seo_spam = round( ($porc->seo_spam / $total) * 100, 2 );
+        }
         $data['porcents'] = $porc;
         // return response()->json($porc,200);
         // $porc

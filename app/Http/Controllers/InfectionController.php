@@ -16,20 +16,19 @@ class InfectionController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index( Request $request, $usuario_id, $domain_id )
-    {
+    {   
         $user_detec = $request->user();
-        if( $usuario_id != $user_detec->id ){
-            return response()->json(['status'=>false,'mensaje'=>'El id del usuario no corresponde con el del url','error'=>'Id bad'],200);
-        }
+        
+        $domain = Domain::find($domain_id);
         $data = (object)[];
         $limit = ($request->limit) ? $request->limit : 15;
-        if( $user_detec->role === 'admin' ){
-            // $data = DB::table('domains')->with(['user'])->paginate($limit);
-            // $data = Infection::paginate($limit);
+        if( $user_detec->role != 'super_admin' ){
+            if( $usuario_id != $user_detec->id || $domain->user_id != $usuario_id ){
+                return response()->json(['status'=>false,'mensaje'=>'Without privileges','error'=>'Sin privilegios'],200);
+            }
             $data = Infection::where('domain_id',$domain_id)->paginate($limit);
-
         }else{
-            $data = Infection::where('domain_id',$domain_id)->where( 'user_id' , $usuario_id )->paginate($limit);
+            $data = Infection::where('domain_id',$domain_id)->paginate($limit);
             // $data = Infection::where( 'user_id' , $usuario_id )->paginate($limit);
         }
         return response()->json(['status'=>true,'mensaje'=>'Domains cargados','data'=>$data],200);
@@ -44,16 +43,17 @@ class InfectionController extends Controller
      */
     public function store(Request $request, $usuario_id, $domain_id)
     {
+        $domain = Domain::find($domain_id);
         $user = User::find($usuario_id);
         if(!$user){
             return response()->json(['status'=>false,'mensaje'=>'No hay un usuario con ese codigo','error'=>'User not found'],200);
         }
-        $user_detec = $request->user();        
-        if( $user_detec->role != "admin" ){
-            if( $usuario_id != $user_detec->id ){
-                return response()->json(['status'=>false,'mensaje'=>'El id del usuario no corresponde con el del url','error'=>'Id bad'],200);
+        $user_detec = $request->user();
+        if( $user_detec->role != 'super_admin' ){
+            if( $usuario_id != $user_detec->id || $domain->user_id != $usuario_id ){
+                return response()->json(['status'=>false,'mensaje'=>'Without privileges','error'=>'Sin privilegios'],200);
             }
-        }
+        }   
         $validator = Validator::make($request->all(), [ 
             'domain_id' => 'required',
             'type' => 'required',
@@ -103,18 +103,16 @@ class InfectionController extends Controller
      */
     public function update(Request $request, $usuario_id, $domain_id  ,$id)
     {
+        $domain = Domain::find($domain_id);
         $user = User::find($usuario_id);
         if(!$user){
             return response()->json(['status'=>false,'mensaje'=>'No hay un usuario con ese codigo','error'=>'User not found'],200);
         }
         $infection = Infection::find( $id );
         $user_detec = $request->user();        
-        if( $user_detec->role != "admin" ){
-            if( $usuario_id != $user_detec->id ){
-                return response()->json(['status'=>false,'mensaje'=>'El id del usuario no corresponde con el del url','error'=>'Id bad'],200);
-            }
-            if( $infection->usuario_id != $usuario_id ){            
-                return response()->json(['status'=>false,'mensaje'=>'Sin permisos al dominio','error'=>'Without privileges'],200);
+        if( $user_detec->role != "super_admin" ){
+            if( $usuario_id != $user_detec->id || $domain->user_id != $user->id ){
+                return response()->json(['status'=>false,'mensaje'=>'Without privileges','error'=>'Id bad'],200);
             }
         }
         $validator = Validator::make($request->all(), [ 
@@ -141,18 +139,16 @@ class InfectionController extends Controller
      */
     public function destroy(Request $request, $usuario_id, $domain_id  ,$id)
     {
+        $domain = Domain::find($domain_id);
         $user = User::find($usuario_id);
         if(!$user){
             return response()->json(['status'=>false,'mensaje'=>'No hay un usuario con ese codigo','error'=>'User not found'],200);
         }
         $infection = Infection::find( $id );
         $user_detec = $request->user();        
-        if( $user_detec->role != "admin" ){
-            if( $usuario_id != $user_detec->id ){
-                return response()->json(['status'=>false,'mensaje'=>'El id del usuario no corresponde con el del url','error'=>'Id bad'],200);
-            }
-            if( $infection->usuario_id != $usuario_id ){            
-                return response()->json(['status'=>false,'mensaje'=>'Sin permisos al dominio','error'=>'Without privileges'],200);
+        if( $user_detec->role != "super_admin" ){
+            if( $usuario_id != $user_detec->id || $domain->user_id != $user->id ){
+                return response()->json(['status'=>false,'mensaje'=>'Without privileges','error'=>'Id bad'],200);
             }
         }
         $infection->delete();
@@ -168,7 +164,7 @@ class InfectionController extends Controller
         $data_array = [];
         $limit = ($request->limit) ? $request->limit : 15;
         $user_detec = $request->user();        
-        if( $user_detec->role === 'admin' ){
+        if( $user_detec->role === 'super_admin' ){
             $data = Domain::has('infections')->with(['infections','user'])->with(['actions_takens' => function ($query) {
                 $query->orderBy('created_at','DESC')->get()->first();
             }])->with(['actions_takens_domain' => function ($query) {
@@ -185,6 +181,8 @@ class InfectionController extends Controller
         }else{
             $data = Domain::has('infections')->where( 'user_id' , $usuario_id )->with(['infections', 'user'])->with(['actions_takens' => function ($query) {
                 $query->orderBy('created_at','DESC')->first();
+            }])->with(['actions_takens_domain' => function ($query) {
+                $query->orderBy('created_at','DESC')->get()->first();
             }])->paginate($limit);
         }
         return response()->json(['status'=>true,'mensaje'=>'Domains infected','data'=>$data],200);
