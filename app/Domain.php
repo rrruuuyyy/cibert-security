@@ -20,6 +20,9 @@ class Domain extends Model
     public function actions_takens(){
         return $this->hasMany('App\ActionTaken','domain_id');
     }
+    public function actions_takens_domain(){
+        return $this->hasMany('App\ActionTakenDomain','domain_id');
+    }
     public function user(){
         return $this->belongsTo('App\User','user_id');
     }

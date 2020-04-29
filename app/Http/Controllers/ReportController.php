@@ -33,12 +33,53 @@ class ReportController extends Controller
         if( $user_detec->role === 'admin' ){
             $data['domains'] = Domain::has('infections')->with(['infections','user'])->with(['actions_takens' => function ($query) {
                 $query->orderBy('created_at','DESC')->get();
+            }])->with(['actions_takens_domain' => function ($query) {
+                $query->orderBy('created_at','DESC')->get()->first();
             }])->get();
         }else{
             $data['domains'] = Domain::has('infections')->where( 'user_id' , $usuario_id )->with(['infections', 'user'])->with(['actions_takens' => function ($query) {
                 $query->orderBy('created_at','DESC')->get();
+            }])->with(['actions_takens_domain' => function ($query) {
+                $query->orderBy('created_at','DESC')->get()->first();
             }])->get();
         }
+        $porc = (object)[];
+        $porc->black_hat = 0;
+        $porc->pharming = 0;
+        $porc->malware = 0;
+        $porc->phising = 0;
+        $porc->seo_spam = 0;    
+        $total = 0;
+        for ($i=0; $i < count( $data['domains'] ) ; $i++) { 
+            $total = $total + count($data['domains'][$i]->infections);
+            for ($j=0; $j < count($data['domains'][$i]->infections) ; $j++) { 
+                switch ( $data['domains'][$i]->infections[$j]->type ) {
+                    case 'black_hat':
+                        $porc->black_hat = $porc->black_hat + 1;
+                    break;
+                    case 'pharming':
+                        $porc->pharming = $porc->pharming + 1;
+                    break;
+                    case 'malware':
+                        $porc->malware = $porc->malware + 1;
+                    break;
+                    case 'phising':
+                        $porc->phising = $porc->phising + 1;
+                    break;
+                    case 'seo_spam':
+                        $porc->seo_spam = $porc->seo_spam + 1;
+                    break;
+                }
+            }
+        }
+        $porc->black_hat = round( ($porc->black_hat / $total) * 100, 2 ) ;
+        $porc->pharming = round( ($porc->pharming / $total) * 100, 2 ) ;
+        $porc->malware = round( ($porc->malware / $total) * 100, 2 );
+        $porc->phising = round( ($porc->phising / $total) * 100, 2 );
+        $porc->seo_spam = round( ($porc->seo_spam / $total) * 100, 2 );
+        $data['porcents'] = $porc;
+        // return response()->json($porc,200);
+        // $porc
         return \view('single_report', $data);
         // $pdf = PDF::loadView('single_report', $data);
         // return $pdf->download('Domain abuse.pdf');

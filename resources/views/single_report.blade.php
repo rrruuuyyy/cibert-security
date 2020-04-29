@@ -21,12 +21,9 @@
 		<span>Total monitored domains: 7998</span>
 		<br>
 		<span>Montitoring service started:: 15-02-1997</span>
-		{{-- <div class="w-50" style="display:block;">
-		</div> --}}
 	</div>
 	<div>
 	</div>
-	{{-- <h4 class="title is-5 espacio10">Infected domains</h4> --}}
 	<div class="w-100 text-section">
 		<h4 class="title is-5">Details report</h4>
 	</div>
@@ -36,10 +33,12 @@
 		<thead>
 			<tr>
 				<th>Domain</th>
-				<th>Name</th>
 				<th>User</th>
 				<th>Action taken</th>
+				<th>Date</th>
 				<th>Status</th>
+				<th>Action taken2</th>
+				<th>Date</th>
 				<th>Infections</th>
 			</tr>
 		</thead>
@@ -47,10 +46,12 @@
 			@foreach ($domains as $domain)
 				<tr>
 					<td>{{$domain->url}}</td>
-					<td>{{$domain->name}}</td>
 					<td>{{ empty($domain->user->name) ? 'No user' : $domain->user->name }}</td>
 					<td>{{ ( count($domain->actions_takens) != 0 )? $domain->actions_takens[0]->type  : 'None' }}</td>
+					<td>{{ ( count($domain->actions_takens) != 0 )? $domain->actions_takens[0]->created_at  : 'None' }}</td>
 					<td>{{$domain->status}}</td>
+					<td>{{ ( count($domain->actions_takens_domain) != 0 )? $domain->actions_takens_domain[0]->type  : 'None' }}</td>
+					<td>{{ ( count($domain->actions_takens_domain) != 0 )? $domain->actions_takens_domain[0]->created_at  : 'None' }}</td>
 					<td>{{count($domain->infections)}}</td>
 				</tr>
 			@endforeach
@@ -63,91 +64,67 @@
 	</div>
 	<div class="w-100" style="display:block; height: 10px;">
 	</div>
-	<div class="w-100 seccion_infection" style="display:block">        
-		<div class="w-50 " style="float: left;">
+	<div class="w-100" style="display:block">        
+		<div class="w-50 cuadro_infection" style="float: left;">
 			<div class="w-20">
 				<p class="text_centrado">
-					Malware: 50%
+					Malware: <?php echo $porcents->malware; ?>%
 				</p>
 			</div>
             <div class="w-80" style="float: right;">
                 <div class="progress-bar">
-                    <span class="progress-bar-fill" style="width: 50%;"></span>
+                    <span class="progress-bar-fill" style="width: <?php echo $porcents->malware; ?>%;"></span>
                 </div>
             </div>
 		</div>
-		<div class="w-50" style="float: left;">
+		<div class="w-50 cuadro_infection" style="float: left;">
             <div class="w-20">
 				<p class="text_centrado">
-					Seo Spam: 10%
+					Seo Spam: <?php echo $porcents->seo_spam; ?>%
 				</p>
 			</div>
             <div class="w-80" style="float: right;">
                 <div class="progress-bar">
-                    <span class="progress-bar-fill" style="width: 10%;"></span>
-                </div>
-            </div>
-        </div>
-	</div>
-	<br>
-	<div class="w-100" style="display:block; height: 10px;">
-	</div>
-	<div class="w-100 seccion_infection" style="display:block">        
-		<div class="w-50 " style="float: left;">
-			<div class="w-20">
-				<p class="text_centrado">
-					Black: 50%
-				</p>
-			</div>
-            <div class="w-80" style="float: right;">
-                <div class="progress-bar">
-                    <span class="progress-bar-fill" style="width: 50%;"></span>
+                    <span class="progress-bar-fill" style="width: <?php echo $porcents->seo_spam; ?>%;"></span>
                 </div>
             </div>
 		</div>
-		<div class="w-50" style="float: left;">
-            <div class="w-20">
-				<p class="text_centrado">
-					Pharming: 10%
-				</p>
-			</div>
-            <div class="w-80" style="float: right;">
-                <div class="progress-bar">
-                    <span class="progress-bar-fill" style="width: 10%;"></span>
-                </div>
-            </div>
-        </div>
-	</div>
-	<br>
-	<div class="w-100" style="display:block; height: 10px;">
-	</div>
-	<div class="w-100 seccion_infection" style="display:block">        
-		<div class="w-50 " style="float: left;">
+		<div class="w-50 cuadro_infection" style="float: left;">
 			<div class="w-20">
 				<p class="text_centrado">
-					Black: 50%
+					Pharming: <?php echo $porcents->pharming; ?>%
 				</p>
 			</div>
             <div class="w-80" style="float: right;">
                 <div class="progress-bar">
-                    <span class="progress-bar-fill" style="width: 50%;"></span>
+                    <span class="progress-bar-fill" style="width: <?php echo $porcents->pharming; ?>%;"></span>
                 </div>
             </div>
 		</div>
-		<div class="w-50" style="float: left;">
+		<div class="w-50 cuadro_infection" style="float: left;">
             <div class="w-20">
 				<p class="text_centrado">
-					Pharming: 10%
+					Phising: <?php echo $porcents->phising; ?>%
 				</p>
 			</div>
             <div class="w-80" style="float: right;">
                 <div class="progress-bar">
-                    <span class="progress-bar-fill" style="width: 10%;"></span>
+                    <span class="progress-bar-fill" style="width: <?php echo $porcents->phising; ?>%;"></span>
                 </div>
             </div>
         </div>
-	</div>
-	<div class="w-100" style="display:block; height: 10px;">
+		<div class="w-50 " style="float: left;">
+            <div class="w-20">
+				<p class="text_centrado">
+					Black Hat Seo: <?php echo $porcents->black_hat; ?>%
+				</p>
+			</div>
+            <div class="w-80" style="float: right;">
+                <div class="progress-bar">
+                    <span class="progress-bar-fill" style="width: <?php echo $porcents->black_hat; ?>%;"></span>
+                </div>
+            </div>
+        </div>
 	</div>
 	<div class="w-100 text-section">
 		<h4 class="title is-5">Abuse distribution type</h4>
@@ -171,6 +148,7 @@
 		vertical-align: middle;
 		padding-left: 5px;
 		padding-top: 5px;
+		font-size: 10px;
 	}
 	.borde_loader{		
 		width: 300px;
@@ -265,6 +243,10 @@
 	.seccion_infection{
 		padding-top: 10px;
 		font-size: 14px;
+	}
+	.cuadro_infection{
+		margin-bottom: 10px;
+		font-size: 12px;
 	}
 </style>
 

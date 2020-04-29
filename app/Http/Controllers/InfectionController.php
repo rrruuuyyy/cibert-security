@@ -171,6 +171,8 @@ class InfectionController extends Controller
         if( $user_detec->role === 'admin' ){
             $data = Domain::has('infections')->with(['infections','user'])->with(['actions_takens' => function ($query) {
                 $query->orderBy('created_at','DESC')->get()->first();
+            }])->with(['actions_takens_domain' => function ($query) {
+                $query->orderBy('created_at','DESC')->get()->first();
             }])->paginate($limit);
             // for ($i=0; $i < count($domains); $i++) { 
             //     if( count($domains[$i]->infections) != 0 ){
