@@ -123,7 +123,7 @@ class InfectionController extends Controller
         if ($validator->fails()) {
             return response()->json(['status'=>false,'mensaje'=>'Datos faltantes','error'=>$validator->errors()], 200);                        
         }
-        $infection->domain_id = $request->domain_id;
+        $infection->domain_id = $domain_id;
         $infection->type = $request->type;
         $infection->abuse_type = $request->abuse_type;
         $infection->save();

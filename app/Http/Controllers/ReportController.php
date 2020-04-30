@@ -30,7 +30,7 @@ class ReportController extends Controller
             "domains" => null,
         ];
         $user_detec = $request->user();        
-        if( $user_detec->role === 'admin' ){
+        if( $user_detec->role === 'super_admin' ){
             $data['domains'] = Domain::has('infections')->with(['infections','user'])->with(['actions_takens' => function ($query) {
                 $query->orderBy('created_at','DESC')->get();
             }])->with(['actions_takens_domain' => function ($query) {
