@@ -26,6 +26,7 @@ class SearchController extends Controller
       }
       public function index(Request $request)
       {
+        $user_detec = $request->user();
         $limit = ($request->limit) ? $request->limit : 15;
         $model = $this->checkModel($request->model);// User or Producto or ETC
         $searchFields = ($request->fields)? json_decode($request->fields) : null;
@@ -35,12 +36,17 @@ class SearchController extends Controller
         $query->where(function($query) use($request, $searchFields){
             $searchWildcard = '%' . $request->search . '%';
             foreach($searchFields as $field){
-            $query->orWhere($field, 'LIKE', $searchWildcard);
+              $query->orWhere($field, 'LIKE', $searchWildcard);
+              
             }
         });
       switch ($request->model) {
           case 'domains':
               $query->with(['infections','user','actions_takens']);
+              //Control de ususario
+              if( $user_detec->role != 'super_admin' ){
+                $query->where('user_id', $user_detec->id);                
+              }
               break;
           case 'products':
               $query->with(['product_attacheds.attached']);
