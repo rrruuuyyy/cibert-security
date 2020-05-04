@@ -16,11 +16,11 @@
 	<div class="separador">
 	</div>
 	<div class="w-100">
-		<span>TLD monitored: Lorelisfrin jsdnfi4</span>
+		<span>TLD monitored: <?php echo $variables->tld?></span>
 		<br>
-		<span>Total monitored domains: 7998</span>
+		<span>Total monitored domains: <?php echo $total_domains?></span>
 		<br>
-		<span>Montitoring service started:: 15-02-1997</span>
+		<span>Montitoring service started:: <?php echo $variables->monitoring_server_started?></span>
 	</div>
 	<div>
 	</div>
@@ -133,11 +133,6 @@
                 </div>
             </div>
         </div>
-	</div>
-	<div class="w-100 text-section">
-		<h4 class="title is-5">Abuse distribution type</h4>
-	</div>
-	<div class="separador">
 	</div>
 </body>
 

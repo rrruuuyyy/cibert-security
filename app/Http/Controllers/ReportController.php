@@ -10,6 +10,7 @@ use Spipu\Html2Pdf\Exception\ExceptionFormatter;
 // use Dompdf\Dompdf;
 use PDF;
 use App\User;
+use App\Variables;
 use App\Domain;
 use Spipu\Html2Pdf\Html2Pdf;
 
@@ -36,13 +37,19 @@ class ReportController extends Controller
             }])->with(['actions_takens_domain' => function ($query) {
                 $query->orderBy('created_at','DESC')->get()->first();
             }])->get();
+            $data['total_domains'] = Domain::get()->count();
+
         }else{
             $data['domains'] = Domain::has('infections')->where( 'user_id' , $usuario_id )->with(['infections', 'user'])->with(['actions_takens' => function ($query) {
                 $query->orderBy('created_at','DESC')->get();
             }])->with(['actions_takens_domain' => function ($query) {
                 $query->orderBy('created_at','DESC')->get()->first();
             }])->get();
+            $data['total_domains'] = Domain::where( 'user_id' , $usuario_id )->get()->count();
         }
+        $var = Variables::get()->first();
+        $var = json_decode( $var->data );
+        $data['variables'] = $var;
         $porc = (object)[];
         $porc->black_hat = 0;
         $porc->pharming = 0;

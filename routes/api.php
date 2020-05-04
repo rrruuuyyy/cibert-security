@@ -31,6 +31,7 @@ Route::prefix('v1')->group(function(){
         Route::post('usuario/{id}/domain_file', 'DomainController@createByFile');
         Route::resource('usuario/{id}/report','ReportController', ['only'=>['index']]);
         Route::resource('canvas','CanvasController', ['only'=>['store','show','update']]);
+        Route::resource('variables','VariablesController', ['only'=>['store','index','update']]);
         // Route::resource('domain/{id}/action_infection','InfectionController', ['only'=>['show','store','update','destroy','index']]);
         Route::put('usuario/{id}/config', 'ConfigController@update');
         Route::resource('user_admin','UserController', ['only'=>['show','store','update','destroy','index']]); // Usuarios controller
