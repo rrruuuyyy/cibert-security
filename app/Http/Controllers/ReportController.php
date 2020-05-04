@@ -50,6 +50,7 @@ class ReportController extends Controller
         $var = Variables::get()->first();
         $var = json_decode( $var->data );
         $data['variables'] = $var;
+        $data['variables']->tld = $user->tld;
         $porc = (object)[];
         $porc->black_hat = 0;
         $porc->pharming = 0;

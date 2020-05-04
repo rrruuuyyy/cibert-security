@@ -92,7 +92,7 @@ class UserController extends Controller
         if(!$user){
             return response()->json(['status'=>false,'mensaje'=>'No hay un usuario con ese codigo','error'=>'User not found'],200);
         }        
-        if( $user_detec->role != "admin" ){
+        if( $user_detec->role != "super_admin" ){
             if( $usuario_id != $user_detec->id ){
                 return response()->json(['status'=>false,'mensaje'=>'Sin privilegios','error'=>'Without privilagion'],200);
             }            
@@ -115,7 +115,7 @@ class UserController extends Controller
         if(!$user){
             return response()->json(['status'=>false,'mensaje'=>'No hay un usuario con ese codigo','error'=>'User not found'],200);
         }        
-        if( $user_detec->role != "admin" ){
+        if( $user_detec->role != "super_admin" ){
             if( $usuario_id != $user_detec->id ){
                 return response()->json(['status'=>false,'mensaje'=>'Sin privilegios','error'=>'Without privilagion'],200);
             }            
@@ -123,6 +123,7 @@ class UserController extends Controller
         $user->name = $request->name;
         $user->email = $request->email;
         $user->role = $request->role;
+        $user->tld = $request->tld;
         $user->save();
         return response()->json(['status'=>true,'mensaje'=>'Usuarios actualizado','data'=>$user],200);
     }
