@@ -51,6 +51,7 @@ class ReportController extends Controller
         $var = json_decode( $var->data );
         $data['variables'] = $var;
         $data['variables']->tld = $user->tld;
+        $data['user'] = $user;
         $porc = (object)[];
         $porc->black_hat = 0;
         $porc->pharming = 0;

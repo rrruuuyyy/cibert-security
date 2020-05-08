@@ -23,7 +23,7 @@ class InfectionController extends Controller
         $data = (object)[];
         $limit = ($request->limit) ? $request->limit : 15;
         if( $user_detec->role != 'super_admin' ){
-            if( $usuario_id != $user_detec->id || $domain->user_id != $usuario_id ){
+            if( $usuario_id != $user_detec->id || $domain->user_id != $usuario_id && $domain->user_id != $user->sub_id ){
                 return response()->json(['status'=>false,'mensaje'=>'Without privileges','error'=>'Sin privilegios'],200);
             }
             $data = Infection::where('domain_id',$domain_id)->paginate($limit);
@@ -50,7 +50,7 @@ class InfectionController extends Controller
         }
         $user_detec = $request->user();
         if( $user_detec->role != 'super_admin' ){
-            if( $usuario_id != $user_detec->id || $domain->user_id != $usuario_id ){
+            if( $usuario_id != $user_detec->id || $domain->user_id != $usuario_id && $domain->user_id != $user->sub_id ){
                 return response()->json(['status'=>false,'mensaje'=>'Without privileges','error'=>'Sin privilegios'],200);
             }
         }   
@@ -111,7 +111,7 @@ class InfectionController extends Controller
         $infection = Infection::find( $id );
         $user_detec = $request->user();        
         if( $user_detec->role != "super_admin" ){
-            if( $usuario_id != $user_detec->id || $domain->user_id != $user->id ){
+            if( $usuario_id != $user_detec->id || $domain->user_id != $user->id && $domain->user_id != $user->sub_id ){
                 return response()->json(['status'=>false,'mensaje'=>'Without privileges','error'=>'Id bad'],200);
             }
         }
@@ -147,7 +147,7 @@ class InfectionController extends Controller
         $infection = Infection::find( $id );
         $user_detec = $request->user();        
         if( $user_detec->role != "super_admin" ){
-            if( $usuario_id != $user_detec->id || $domain->user_id != $user->id ){
+            if( $usuario_id != $user_detec->id || $domain->user_id != $user->id && $domain->user_id != $user->sub_id ){
                 return response()->json(['status'=>false,'mensaje'=>'Without privileges','error'=>'Id bad'],200);
             }
         }
@@ -179,7 +179,7 @@ class InfectionController extends Controller
             // var_dump( $data );
             // return;
         }else{
-            $data = Domain::has('infections')->where( 'user_id' , $usuario_id )->with(['infections', 'user'])->with(['actions_takens' => function ($query) {
+            $data = Domain::has('infections')->where( 'user_id' , $usuario_id )->orWhere('user_id',$user->sub_id)->with(['infections', 'user'])->with(['actions_takens' => function ($query) {
                 $query->orderBy('created_at','DESC')->first();
             }])->with(['actions_takens_domain' => function ($query) {
                 $query->orderBy('created_at','DESC')->get()->first();

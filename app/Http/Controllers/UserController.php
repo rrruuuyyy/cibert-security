@@ -124,6 +124,9 @@ class UserController extends Controller
         $user->email = $request->email;
         $user->role = $request->role;
         $user->tld = $request->tld;
+        $user->sub_id = $request->sub_id;
+        $user->monitoring = $request->monitoring;
+        $user->total_monitoring = $request->total_monitoring;
         $user->save();
         return response()->json(['status'=>true,'mensaje'=>'Usuarios actualizado','data'=>$user],200);
     }

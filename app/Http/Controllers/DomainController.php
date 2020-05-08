@@ -20,10 +20,10 @@ class DomainController extends Controller
      */
     public function index(Request $request, $usuario_id)
     {
-        // $user = User::find($usuario_id);
-        // if(!$user){
-        //     return response()->json(['status'=>false,'mensaje'=>'No hay un usuario con ese codigo','error'=>'User not found'],200);
-        // }
+        $user = User::find($usuario_id);
+        if(!$user){
+            return response()->json(['status'=>false,'mensaje'=>'No hay un usuario con ese codigo','error'=>'User not found'],200);
+        }
         //Detectamos que el usuario sea el mismo y sus permisos
         $user_detec = $request->user();
         if( $usuario_id != $user_detec->id ){
@@ -37,7 +37,7 @@ class DomainController extends Controller
                 $query->orderBy('created_at','DESC')->get()->first();
             }])->paginate($limit);
         }else{
-            $data = Domain::where( 'user_id' , $usuario_id )->with(['user','infections'])->with(['actions_takens' => function ($query) {
+            $data = Domain::where( 'user_id' , $usuario_id )->orWhere('user_id',$user->sub_id)->with(['user','infections'])->with(['actions_takens' => function ($query) {
                 $query->orderBy('created_at','DESC')->get()->first();
             }])->paginate($limit);
         }
@@ -121,7 +121,7 @@ class DomainController extends Controller
             if( $usuario_id != $user_detec->id ){
                 return response()->json(['status'=>false,'mensaje'=>'El id del usuario no corresponde con el del url','error'=>'Id bad'],200);
             }
-            if( $domain->user_id != $usuario_id ){            
+            if( $domain->user_id != $usuario_id && $domain->user_id != $user->sub_id ){            
                 return response()->json(['status'=>false,'mensaje'=>'Sin permisos al dominio','error'=>'Without privileges'],200);
             }
         }
@@ -159,7 +159,7 @@ class DomainController extends Controller
             if( $usuario_id != $user_detec->id ){
                 return response()->json(['status'=>false,'mensaje'=>'El id del usuario no corresponde con el del url','error'=>'Id bad'],200);
             }
-            if( $domain->usuario_id != $usuario_id ){            
+            if( $domain->usuario_id != $usuario_id && $domain->user_id != $user->sub_id ){            
                 return response()->json(['status'=>false,'mensaje'=>'Sin permisos al dominio','error'=>'Without privileges'],200);
             }
         }

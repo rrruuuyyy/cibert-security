@@ -8,7 +8,7 @@
 
 <body class="margenes" style="display:block;">
 	<div class="w-100 centrado">
-		<h1 class="title is-3">Domain abuse</h1>
+		<h1 class="title is-3">Domain abuse report</h1>
 	</div>
 	<div class="w-100 text-section">
 		<h4 class="title is-5">Details report</h4>
@@ -16,11 +16,11 @@
 	<div class="separador">
 	</div>
 	<div class="w-100">
-		<span>TLD monitored: <?php echo $variables->tld?></span>
+		<span>TLD monitored: <?php echo $user->tld?></span>
 		<br>
-		<span>Total monitored domains: <?php echo $total_domains?></span>
+		<span>Total monitored domains: <?php echo $user->total_monitoring?></span>
 		<br>
-		<span>Montitoring service started:: <?php echo $variables->monitoring_server_started?></span>
+		<span>Montitoring service started: <?php echo $user->monitoring?></span>
 	</div>
 	<div>
 	</div>
