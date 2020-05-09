@@ -37,7 +37,8 @@ class DomainController extends Controller
                 $query->orderBy('created_at','DESC')->get()->first();
             }])->paginate($limit);
         }else{
-            $data = Domain::where( 'user_id' , $usuario_id )->orWhere('user_id',$user->sub_id)->with(['user','infections'])->with(['actions_takens' => function ($query) {
+            $data = Domain::where( 'user_id' , $usuario_id )->orWhere('user_id',$user->sub_id)->where('user_id','!=',null)
+            ->with(['user','infections'])->with(['actions_takens' => function ($query) {
                 $query->orderBy('created_at','DESC')->get()->first();
             }])->paginate($limit);
         }
@@ -56,11 +57,14 @@ class DomainController extends Controller
         if(!$user){
             return response()->json(['status'=>false,'mensaje'=>'No hay un usuario con ese codigo','error'=>'User not found'],200);
         }
-        $user_detec = $request->user();        
+        $user_detec = $request->user();
+        $domain = new Domain( $request->all() );
         if( $user_detec->role != "super_admin" ){
             if( $usuario_id != $user_detec->id ){
                 return response()->json(['status'=>false,'mensaje'=>'El id del usuario no corresponde con el del url','error'=>'Id bad'],200);
             }
+            //Si no es super_admin entonces se le agrega el id del usuario en cuestion
+            $domain->user_id = $user->id;
         }
         $validator = Validator::make($request->all(), [ 
             'url' => 'required',
@@ -68,7 +72,6 @@ class DomainController extends Controller
         if ($validator->fails()) {
             return response()->json(['status'=>false,'mensaje'=>'Datos faltantes','error'=>$validator->errors()], 200);                        
         }
-        $domain = new Domain( $request->all() );
         $domain->save();
         $domain->user();
         return response()->json(['status'=>true,'mensaje'=>'Domains created','data'=>$domain],200);

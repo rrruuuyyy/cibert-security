@@ -179,7 +179,7 @@ class InfectionController extends Controller
             // var_dump( $data );
             // return;
         }else{
-            $data = Domain::has('infections')->where( 'user_id' , $usuario_id )->orWhere('user_id',$user->sub_id)->with(['infections', 'user'])->with(['actions_takens' => function ($query) {
+            $data = Domain::has('infections')->where( 'user_id' , $usuario_id )->orWhere('user_id',$user->sub_id)->where('user_id','!=',null)->with(['infections', 'user'])->with(['actions_takens' => function ($query) {
                 $query->orderBy('created_at','DESC')->first();
             }])->with(['actions_takens_domain' => function ($query) {
                 $query->orderBy('created_at','DESC')->get()->first();
