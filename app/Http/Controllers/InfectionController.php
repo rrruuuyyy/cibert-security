@@ -58,6 +58,8 @@ class InfectionController extends Controller
             'domain_id' => 'required',
             'type' => 'required',
             'abuse_type' => 'required',
+            'evidence' => 'required',
+            'date_detected' => 'required',
         ]);  
         if ($validator->fails()) {
             return response()->json(['status'=>false,'mensaje'=>'Datos faltantes','error'=>$validator->errors()], 200);                        
@@ -119,6 +121,8 @@ class InfectionController extends Controller
             'domain_id' => 'required',
             'type' => 'required',
             'abuse_type' => 'required',
+            'evidence' => 'required',
+            'date_detected' => 'required',
         ]);    
         if ($validator->fails()) {
             return response()->json(['status'=>false,'mensaje'=>'Datos faltantes','error'=>$validator->errors()], 200);                        
@@ -126,6 +130,8 @@ class InfectionController extends Controller
         $infection->domain_id = $domain_id;
         $infection->type = $request->type;
         $infection->abuse_type = $request->abuse_type;
+        $infection->evidence = $request->evidence;
+        $infection->date_detected = $request->date_detected;
         $infection->save();
         // $infection->domain();
         return response()->json(['status'=>true,'mensaje'=>'Infection updated','data'=>$infection],200);
