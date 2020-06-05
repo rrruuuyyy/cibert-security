@@ -176,11 +176,11 @@ class DomainController extends Controller
         if(!$usuario){
             return response()->json(['status'=>false,'mensaje'=>'No hay un usuario con ese codigo','error'=>'User not found'],200);
         }
-        if( $user_detec->role != 'super_admin' ){
-            if( $user_detec->id != $usuario->id ){
-                return response()->json(['status'=>false,'mensaje'=>'Sin permisos al dominio','error'=>'Without privileges'],200);
-            }
-        }
+        // if( $user_detec->role != 'super_admin' ){
+        //     if( $user_detec->id != $usuario->id ){
+        //         return response()->json(['status'=>false,'mensaje'=>'Sin permisos al dominio','error'=>'Without privileges'],200);
+        //     }
+        // }
         $file = $request->file('file_xlsx');        
         if( !$file ) return response()->json(['status'=>false,'mensaje'=>'File not found','error'=>'Without file'],200);
         $reader = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
@@ -190,7 +190,11 @@ class DomainController extends Controller
         // var_dump( count($data_array) );
         // return;
         // return response()->json($data_array,200);
-        save($data_array);
+        if( $user_detec->role != 'super_admin' ){
+            save($data_array);
+        }else{
+            saveUser( $data_array, $user_detec->id );
+        }
         // for ($i=1; $i < count( $data_array ) ; $i++) { 
         //     $url = $data_array[$i][0];
         //     $user_id = $data_array[$i][1];
@@ -219,6 +223,27 @@ class DomainController extends Controller
             for ($i=1; $i < count( $data_array ) ; $i++) { 
                 $url = $data_array[$i][0];
                 $user_id = $data_array[$i][1];
+                // if ( $url = 'Dominios' || $url = 'dominios' || $url = '' ) continue;
+                // return $url;
+                $url = str_replace( '/', '', $url ); 
+                $url = str_replace( 'https:', '', $url ); 
+                $url = str_replace( 'www.', '', $url );
+                $domain = Domain::where( 'url', $url )->get()->first();
+                if( !$domain ){
+                    $new_domain = new Domain();
+                    $new_domain->url = $url;
+                    $new_domain->user_id = $user_id;
+                    $new_domain->save();
+                }else{
+                    $domain->user_id = $user_id;
+                    $domain->save();
+                }
+            }
+        }
+
+        function saveUser( $data_array, $user_id ){
+            for ($i=1; $i < count( $data_array ) ; $i++) { 
+                $url = $data_array[$i][0];
                 // if ( $url = 'Dominios' || $url = 'dominios' || $url = '' ) continue;
                 // return $url;
                 $url = str_replace( '/', '', $url ); 
