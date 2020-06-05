@@ -190,7 +190,7 @@ class DomainController extends Controller
         // var_dump( count($data_array) );
         // return;
         // return response()->json($data_array,200);
-        if( $user_detec->role != 'super_admin' ){
+        if( $user_detec->role === 'super_admin' ){
             save($data_array);
         }else{
             saveUser( $data_array, $user_detec->id );
