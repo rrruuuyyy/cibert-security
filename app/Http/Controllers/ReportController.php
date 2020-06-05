@@ -47,10 +47,10 @@ class ReportController extends Controller
             }])->get();
             $data['total_domains'] = Domain::where( 'user_id' , $usuario_id )->get()->count();
         }
-        $var = Variables::get()->first();
-        $var = json_decode( $var->data );
-        $data['variables'] = $var;
-        $data['variables']->tld = $user->tld;
+        // $var = Variables::get()->first();
+        // $var = json_decode( $var->data );
+        // $data['variables'] = $var;
+        // $data['variables']->tld = $user->tld;
         $data['user'] = $user;
         $porc = (object)[];
         $porc->black_hat = 0;
