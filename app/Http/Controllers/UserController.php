@@ -19,10 +19,14 @@ class UserController extends Controller
         $limit = ($request->limit) ? $request->limit : 15;
         $user = $request->user();
         if( $user->role === 'super_admin' ){
-            $users = User::with(['domains'])->paginate($limit);
+            $users = User::with(['domains' => function ($domain){
+                $domain->count();
+            }])->paginate($limit);
             return response()->json(['status'=>true,'mensaje'=>'Usuarios encontrados','data'=>$users],200);
         }
-        $users = User::where('role','!=','super_admin')->with(['domains'])->paginate($limit);
+        $users = User::where('role','!=','super_admin')->with(['domains' => function ($domain){
+            $domain->count();
+        }])->paginate($limit);
         return response()->json(['status'=>true,'mensaje'=>'Usuarios encontrados','data'=>$users],200);
     }
 

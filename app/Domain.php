@@ -17,6 +17,9 @@ class Domain extends Model
     public function infections(){
         return $this->hasMany('App\Infection','domain_id');
     }
+    public function black_lists(){
+        return $this->hasMany('App\BlackList','domain_id');
+    }
     public function actions_takens(){
         return $this->hasMany('App\ActionTaken','domain_id');
     }
