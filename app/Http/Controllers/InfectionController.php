@@ -151,6 +151,8 @@ class InfectionController extends Controller
             return response()->json(['status'=>false,'mensaje'=>'No hay un usuario con ese codigo','error'=>'User not found'],200);
         }
         $infection = Infection::find( $id );
+
+        
         $user_detec = $request->user();        
         if( $user_detec->role != "super_admin" ){
             if( $usuario_id != $user_detec->id || $domain->user_id != $user->id && $domain->user_id != $user->sub_id ){
